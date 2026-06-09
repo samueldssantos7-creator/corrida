@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planilha de Treino Meia Maratona | Assessoria Samuel</title>
+    <meta name="description" content="Planilha de treinamento interativa de 5 semanas para Meia Maratona (21.1K). Acompanhe seu progresso e ritmo.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Canvas Confetti for Celebration -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            /* Colors */
+            --bg-dark: #0f172a;
+            --bg-card-dark: rgba(30, 41, 59, 0.7);
+            --text-dark: #f8fafc;
+            --text-muted-dark: #94a3b8;
+            
+            --bg-light: #f8fafc;
+            --bg-card-light: rgba(255, 255, 255, 0.85);
+            --text-light: #0f172a;
+            --text-muted-light: #64748b;
+            
+            /* Accent gradients */
+            --primary: #f97316; /* Athletic Orange */
+            --primary-glow: rgba(249, 115, 22, 0.15);
+            --secondary: #06b6d4; /* Athletic Cyan */
+            --accent-success: #10b981;
+            
+            /* Card Styling constants */
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Dark Theme Default */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+            transition: var(--transition);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body.light-theme {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+        }
+
+        h1, h2, h3, h4, .font-outfit {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Background Glows */
+        .bg-glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary-glow) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+            filter: blur(40px);
+            pointer-events: none;
+        }
+        .glow-1 { top: -10%; right: -10%; }
+        .glow-2 { bottom: 10%; left: -10%; }
+
+        /* Container Layout */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Header CSS */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 30px;
+        }
+        body.light-theme header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+        }
+        .logo i {
+            font-size: 28px;
+            color: var(--primary);
+        }
+        .logo-title {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .logo-title span {
+            color: var(--primary);
+        }
+
+        .theme-toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: inherit;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: var(--transition);
+        }
+        body.light-theme .theme-toggle-btn {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .theme-toggle-btn:hover {
+            transform: scale(1.08);
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Dashboard & Summary Widget */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.8fr 1.2fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .glass-card {
+            background: var(--bg-card-dark);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+        }
+        body.light-theme .glass-card {
+            background: var(--bg-card-light);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        /* Countdown Visual */
+        .countdown-widget {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
+            border: 1px solid rgba(249, 115, 22, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .countdown-widget::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .countdown-value {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin: 10px 0;
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+            text-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+        }
+        .countdown-unit {
+            font-size: 20px;
+            font-weight: 500;
+            color: inherit;
+        }
+
+        .progress-circle-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px auto;
+        }
+        .progress-svg {
+            transform: rotate(-90deg);
+        }
+        .progress-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 10;
+        }
+        body.light-theme .progress-bg {
+            stroke: rgba(0, 0, 0, 0.05);
+        }
+        .progress-fill {
+            fill: none;
+            stroke: url(#gradient-progress);
+            stroke-width: 10;
+            stroke-dasharray: 314.16;
+            stroke-dashoffset: 314.16;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.8s ease-in-out;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .progress-text span {
+            font-size: 11px;
+            display: block;
+            font-weight: 500;
+            color: var(--text-muted-dark);
+        }
+        body.light-theme .progress-text span {
+            color: var(--text-muted-light);
+        }
+
+        /* Week Nav Tabs */
+        .week-selector-container {
+            margin-bottom: 30px;
+        }
+        .week-tabs {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        body.light-theme .week-tabs {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        @media (max-width: 600px) {
+            .week-tabs {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+            .week-tab-btn:nth-child(4), .week-tab-btn:nth-child(5) {
+                grid-column: span 1.5;
+            }
+        }
+
+        .week-tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted-dark);
+            padding: 12px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        body.light-theme .week-tab-btn {
+            color: var(--text-muted-light);
+        }
+
+        .week-tab-btn span.vol {
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        .week-tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+
+        /* Weekly Header Dashboard card details */
+        .week-header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--primary);
+            padding-left: 15px;
+        }
+        .week-header-info h2 {
+            margin: 0;
+            font-size: 26px;
+        }
+        .week-stats-badges {
+            display: flex;
+            gap: 12px;
+        }
+        .stat-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        body.light-theme .stat-badge {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        .stat-badge i {
+            color: var(--primary);
+        }
+
+        /* Workouts List styling */
+        .workouts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        @media (max-width: 768px) {
+            .workouts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .workout-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            border-left: 4px solid var(--secondary);
+            opacity: 1;
+        }
+
+        /* Visual types color boundaries */
+        .workout-card.longo-type {
+            border-left-color: var(--primary);
+        }
+        .workout-card.ritmo-type {
+            border-left-color: #a855f7; /* Purple for Tempo Run */
+        }
+        .workout-card.rest-type {
+            border-left-color: #64748b; /* Slate for Rest */
+            background: rgba(30, 41, 59, 0.4);
+        }
+        body.light-theme .workout-card.rest-type {
+            background: rgba(0, 0, 0, 0.02);
+        }
+        .workout-card.race-type {
+            border-left-color: var(--accent-success);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(30, 41, 59, 0.7) 100%);
+        }
+
+        .workout-card.completed {
+            opacity: 0.6;
+        }
+        .workout-card.completed::after {
+            content: '\ea5e'; /* Phosphor check-circle icon unicode */
+            font-family: "Phosphor-Icons" !important;
+            position: absolute;
+            top: 15px; right: 15px;
+            font-size: 32px;
+            color: var(--accent-success);
+            opacity: 0.25;
+        }
+
+        .workout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        .workout-day-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .workout-date-label {
+            font-size: 12px;
+            color: var(--text-muted-dark);
+            font-weight: 500;
+        }
+        body.light-theme .workout-date-label {
+            color: var(--text-muted-light);
+        }
+
+        .workout-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .longo-type .workout-badge { color: var(--primary); background: rgba(249, 115, 22, 0.1); }
+        .ritmo-type .workout-badge { color: #c084fc; background: rgba(168, 85, 247, 0.1); }
+        .rodagem-type .workout-badge { color: var(--secondary); background: rgba(6, 182, 212, 0.1); }
+        .rest-type .workout-badge { color: #94a3b8; background: rgba(100, 116, 139, 0.1); }
+        .race-type .workout-badge { color: var(--accent-success); background: rgba(16, 185, 129, 0.1); }
+
+        /* Workout specifics */
+        .workout-metrics {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        body.light-theme .workout-metrics {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .metric-value-huge {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1;
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary);
+        }
+        .longo-type .metric-value-huge { color: var(--primary); }
+        .ritmo-type .metric-value-huge { color: #a855f7; }
+        .rodagem-type .metric-value-huge { color: var(--secondary); }
+        .race-type .metric-value-huge { color: var(--accent-success); }
+        
+        .metric-value-label {
+            font-size: 11px;
+            color: var(--text-muted-dark);
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+        body.light-theme .metric-value-label {
+            color: var(--text-muted-light);
+        }
+
+        .metric-divider {
+            width: 1px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        body.light-theme .metric-divider {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .workout-pace-box {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Stepper/Breakdown style for splits */
+        .splits-stepper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+            border-left: 2px dashed rgba(255, 255, 255, 0.1);
+            body.light-theme & { border-left-color: rgba(0, 0, 0, 0.1); }
+            padding-left: 15px;
+            margin-left: 5px;
+        }
+        .split-step {
+            position: relative;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .split-step::before {
+            content: '';
+            position: absolute;
+            left: -21px; top: 5px;
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted-dark);
+            border: 2px solid var(--bg-dark);
+            body.light-theme & { border-color: var(--bg-light); background: var(--text-muted-light); }
+        }
+        .split-step.highlight::before {
+            background: #a855f7;
+        }
+
+        .workout-desc {
+            font-size: 13.5px;
+            color: var(--text-muted-dark);
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+        body.light-theme .workout-desc {
+            color: var(--text-muted-light);
+        }
+
+        .workout-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Custom Toggle Checkbox */
+        .check-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .check-input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0; width: 0;
+        }
+        .checkmark {
+            height: 22px;
+            width: 22px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        body.light-theme .checkmark {
+            background-color: rgba(0, 0, 0, 0.02);
+            border: 2px solid rgba(0, 0, 0, 0.15);
+        }
+        .check-container:hover .check-input ~ .checkmark {
+            border-color: var(--primary);
+        }
+        .check-input:checked ~ .checkmark {
+            background-color: var(--accent-success);
+            border-color: var(--accent-success);
+        }
+        .checkmark::after {
+            content: "";
+            display: none;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2.5px 2.5px 0;
+            transform: rotate(45deg) translate(-1px, -1px);
+        }
+        .check-input:checked ~ .checkmark::after {
+            display: block;
+        }
+
+        /* Utilities Tools Section */
+        .tools-section {
+            display: grid;
+            grid-template-columns: 1.2fr 1.8fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        @media (max-width: 768px) {
+            .tools-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .calc-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .form-group select, .form-group input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: inherit;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+        }
+        .form-group select option {
+            background-color: #1e293b;
+            color: #f8fafc;
+        }
+        body.light-theme .form-group select option {
+            background-color: #ffffff;
+            color: #0f172a;
+        }
+        body.light-theme .form-group select, body.light-theme .form-group input {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .form-group select:focus, .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+        }
+
+        .calc-result {
+            margin-top: 15px;
+            background: rgba(249, 115, 22, 0.06);
+            border: 1px solid rgba(249, 115, 22, 0.15);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .calc-result-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-muted-dark);
+            body.light-theme & { color: var(--text-muted-light); }
+            margin-bottom: 5px;
+        }
+        .calc-result-time {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .coach-tips-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+        }
+        .tip-item {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .tip-icon {
+            font-size: 22px;
+            color: var(--primary);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .tip-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .tip-desc {
+            color: var(--text-muted-dark);
+            body.light-theme & { color: var(--text-muted-light); }
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            body.light-theme & { border-top-color: rgba(0, 0, 0, 0.06); }
+            padding: 30px 0;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted-dark);
+            body.light-theme & { color: var(--text-muted-light); }
+        }
+        .footer-logo {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+            body.light-theme & { color: var(--text-light); }
+        }
+        .footer-logo span {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Background lights -->
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+
+    <div class="container">
+        
+        <!-- Header -->
+        <header>
+            <a href="#" class="logo">
+                <i class="ph ph-lightning"></i>
+                <div class="logo-title">SAMUEL<span>RUN</span></div>
+            </a>
+            
+            <button class="theme-toggle-btn" id="theme-toggle" aria-label="Alterar Tema">
+                <i class="ph ph-sun" id="theme-icon"></i>
+            </button>
+        </header>
+
+        <!-- General Progress & Countdown Dashboard -->
+        <div class="dashboard-grid">
+            <div class="glass-card" style="display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
+                <div style="text-align: center; flex-grow: 1;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 500;">Seu Progresso de Treinos</h3>
+                    <p style="font-size: 13px; color: var(--text-muted-dark); margin: 0 0 20px 0;" id="prog-details-txt">Você completou 0 de 20 sessões da planilha.</p>
+                </div>
+                
+                <div class="progress-circle-wrapper">
+                    <svg class="progress-svg" width="120" height="120" viewBox="0 0 120 120">
+                        <defs>
+                            <linearGradient id="gradient-progress" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="var(--primary)" />
+                                <stop offset="100%" stop-color="var(--secondary)" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="progress-bg" cx="60" cy="60" r="50"></circle>
+                        <circle class="progress-fill" cx="60" cy="60" r="50" id="overall-progress-ring"></circle>
+                    </svg>
+                    <div class="progress-text" id="overall-progress-pct">0%<span>Concluído</span></div>
+                </div>
+            </div>
+
+            <div class="glass-card countdown-widget">
+                <h3 style="margin: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Contagem Regressiva para a Glória</h3>
+                <div class="countdown-value" id="countdown-val">
+                    <span>--</span> <span class="countdown-unit">dias</span>
+                </div>
+                <p style="margin: 0; font-size: 13px; font-weight: 500;">Meia Maratona (21.1 km) &bull; 19 de Julho</p>
+            </div>
+        </div>
+
+        <!-- Weekly Selector Tabs -->
+        <div class="week-selector-container">
+            <div class="week-tabs" id="week-tabs">
+                <button class="week-tab-btn active" data-week="1">
+                    Semana 1
+                    <span class="vol">24 km total</span>
+                </button>
+                <button class="week-tab-btn" data-week="2">
+                    Semana 2
+                    <span class="vol">28 km total</span>
+                </button>
+                <button class="week-tab-btn" data-week="3">
+                    Semana 3
+                    <span class="vol">32 km total</span>
+                </button>
+                <button class="week-tab-btn" data-week="4">
+                    Semana 4
+                    <span class="vol">36 km total</span>
+                </button>
+                <button class="week-tab-btn" data-week="5">
+                    Semana 5
+                    <span class="vol">Polimento</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Week Detail Card Info -->
+        <div class="week-header-info">
+            <div>
+                <h2 id="week-title">Semana 1: Rodagem & Base</h2>
+                <p id="week-desc" style="margin: 5px 0 0 0; font-size: 14px; color: var(--text-muted-dark);"></p>
+            </div>
+            <div class="week-stats-badges">
+                <div class="stat-badge">
+                    <i class="ph ph-footprints"></i>
+                    <span id="week-badge-vol">Volume: 24 km</span>
+                </div>
+                <div class="stat-badge">
+                    <i class="ph ph-chart-pie-slice"></i>
+                    <span id="week-badge-ratio">Longo: 33.3%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workouts Lists Grid -->
+        <div class="workouts-grid" id="workouts-grid">
+            <!-- Dynamic Injection from JS -->
+        </div>
+
+        <!-- Coach Corner & Calculator Grid -->
+        <div class="tools-section">
+            
+            <!-- Pace Calculator -->
+            <div class="glass-card">
+                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; font-size: 18px;">
+                    <i class="ph ph-calculator" style="color: var(--primary);"></i> Calculadora de Tempo Estimado
+                </h3>
+                <p style="font-size: 13px; color: var(--text-muted-dark); margin-bottom: 20px;">Estime o seu tempo total de prova baseando-se no ritmo médio pretendido.</p>
+                <div class="calc-form">
+                    <div class="form-group">
+                        <label for="calc-dist">Distância</label>
+                        <select id="calc-dist">
+                            <option value="5">5 km (Treinos Livres)</option>
+                            <option value="10">10 km (Primeiro Dois Dígitos)</option>
+                            <option value="14">14 km (Pico de Longo)</option>
+                            <option value="21.1" selected>21.1 km (Meia Maratona)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="calc-pace">Ritmo Pretendido (min/km)</label>
+                        <select id="calc-pace">
+                            <option value="5:30">5:30 min/km (Ritmo Forte)</option>
+                            <option value="5:40" selected>5:40 min/km (Ritmo Alvo de Prova)</option>
+                            <option value="5:45">5:45 min/km</option>
+                            <option value="5:50">5:50 min/km</option>
+                            <option value="6:00">6:00 min/km (Rodagem Leve)</option>
+                            <option value="6:05">6:05 min/km</option>
+                        </select>
+                    </div>
+                    <div class="calc-result">
+                        <div class="calc-result-title">Tempo Final Estimado</div>
+                        <div class="calc-result-time" id="calc-time-output">1h 59m 36s</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coach tips corner -->
+            <div class="glass-card">
+                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; font-size: 18px;">
+                    <i class="ph ph-shield-check" style="color: var(--secondary);"></i> Dicas do Treinador Samuel
+                </h3>
+                <p style="font-size: 13px; color: var(--text-muted-dark); margin-bottom: 20px;">Segredos de performance e evolução de corrida por quem entende de performance.</p>
+                <div class="coach-tips-list">
+                    <div class="tip-item">
+                        <div class="tip-icon"><i class="ph ph-trend-up"></i></div>
+                        <div>
+                            <div class="tip-title">Supercompensação (Semana 5)</div>
+                            <div class="tip-desc">Reduzir o volume na última semana não diminui seu condicionamento. Pelo contrário: permite que suas fibras musculares se recuperem e estoquem o máximo de glicogênio. Confie no polimento!</div>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon"><i class="ph ph-sneaker-move"></i></div>
+                        <div>
+                            <div class="tip-title">Cadência Inteligente</div>
+                            <div class="tip-desc">Mantenha seus passos rápidos e curtos (foco em ~170 a 180 passos por minuto). Isso reduz o tempo de contato com o solo e o impacto direto nos joelhos e articulações.</div>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-icon"><i class="ph ph-drop"></i></div>
+                        <div>
+                            <div class="tip-title">Estratégia de Pace Constante</div>
+                            <div class="tip-desc">O segredo de completar a Meia Maratona forte é manter o ritmo alvo estável (5:40) desde o início. Não se empolgue na largada. Correr de forma constante poupa energia crítica.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-logo">SAMUEL<span>RUN</span> &bull; 2026</div>
+            <p>&copy; Planilha de Treino Exclusiva. Compartilhe o link com seus corredores.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Workout Data Array representation
+        const workoutData = {
+            1: {
+                volume: "24 km",
+                ratio: "33.3%",
+                desc: "Foco no controle de ritmo de prova e rodagem confortável para soltar a musculatura.",
+                days: [
+                    {
+                        day: "Segunda-feira",
+                        name: "Rodagem Conforto",
+                        badge: "Conforto",
+                        dist: "5",
+                        pace: "5:50 - 6:05 min/km",
+                        type: "rodagem",
+                        desc: "Ritmo tranquilo e confortável. Foco em soltar as pernas e acumular base mecânica leve.",
+                        splits: []
+                    },
+                    {
+                        day: "Quarta-feira",
+                        name: "Ritmo de Prova Estável",
+                        badge: "Ritmo de Prova",
+                        dist: "7",
+                        pace: "5:40 min/km (Principal)",
+                        type: "ritmo",
+                        desc: "Firmeza muscular e constância mecânica no ritmo alvo pretendido para o dia da prova.",
+                        splits: [
+                            "1 km de aquecimento leve",
+                            "5 km cravados no ritmo da prova (5:40 min/km)",
+                            "1 km de desaquecimento leve"
+                        ]
+                    },
+                    {
+                        day: "Sexta-feira",
+                        name: "Rodagem de Suporte",
+                        badge: "Suporte",
+                        dist: "4",
+                        pace: "5:50 - 6:00 min/km",
+                        type: "rodagem",
+                        desc: "Corrida regenerativa ativa. Foco no conforto aeróbico sem gerar fadiga para o treino longo.",
+                        splits: []
+                    },
+                    {
+                        day: "Domingo",
+                        name: "Treino Longo",
+                        badge: "Longo",
+                        dist: "8",
+                        pace: "5:45 - 6:00 min/km",
+                        type: "longo",
+                        desc: "Adaptação cardiovascular e muscular para distâncias contínuas. Mantenha a respiração ritmada.",
+                        splits: []
+                    }
+                ]
+            },
+            2: {
+                volume: "28 km",
+                ratio: "35.7%",
+                desc: "Primeiro passo importante: seu primeiro treino longo atingindo os dois dígitos de distância.",
+                days: [
+                    {
+                        day: "Segunda-feira",
+                        name: "Rodagem Conforto",
+                        badge: "Conforto",
+                        dist: "6",
+                        pace: "5:50 - 6:05 min/km",
+                        type: "rodagem",
+                        desc: "Aumentando um pouco a base da semana. Leve e controlado.",
+                        splits: []
+                    },
+                    {
+                        day: "Quarta-feira",
+                        name: "Ritmo de Prova Estável",
+                        badge: "Ritmo de Prova",
+                        dist: "8",
+                        pace: "5:40 min/km",
+                        type: "ritmo",
+                        desc: "Ajuste e ganho de confiança rodando a maior parte do treino no ritmo exato dos 21.1K.",
+                        splits: [
+                            "1 km de aquecimento leve",
+                            "6 km cravados no ritmo da prova (5:40 min/km)",
+                            "1 km de desaquecimento leve"
+                        ]
+                    },
+                    {
+                        day: "Sexta-feira",
+                        name: "Rodagem de Suporte",
+                        badge: "Suporte",
+                        dist: "4",
+                        pace: "5:50 - 6:00 min/km",
+                        type: "rodagem",
+                        desc: "Rodagem leve. Ideal para alinhar a postura e foco em passadas curtas e eficientes.",
+                        splits: []
+                    },
+                    {
+                        day: "Domingo",
+                        name: "Treino Longo (Dois Dígitos!)",
+                        badge: "Longo",
+                        dist: "10",
+                        pace: "5:45 - 6:00 min/km",
+                        type: "longo",
+                        desc: "Marco importante! Seu primeiro treino de 10 km. Hidrate-se bem durante o percurso.",
+                        splits: []
+                    }
+                ]
+            },
+            3: {
+                volume: "32 km",
+                ratio: "37.5%",
+                desc: "Aumento progressivo de carga e adaptação mecânica para o volume acumulado.",
+                days: [
+                    {
+                        day: "Segunda-feira",
+                        name: "Rodagem Conforto",
+                        badge: "Conforto",
+                        dist: "6",
+                        pace: "5:50 - 6:05 min/km",
+                        type: "rodagem",
+                        desc: "Rodagem mecânica leve e solta para recuperar as pernas pós-longo de 10k.",
+                        splits: []
+                    },
+                    {
+                        day: "Quarta-feira",
+                        name: "Ritmo de Prova com Volume",
+                        badge: "Tempo Run",
+                        dist: "9",
+                        pace: "5:40 min/km",
+                        type: "ritmo",
+                        desc: "Sessão longa de ritmo sustentado. Foco no foco mental para manter o ritmo sem oscilar.",
+                        splits: [
+                            "1 km de aquecimento leve",
+                            "7 km sustentados no ritmo da prova (5:40 min/km)",
+                            "1 km de desaquecimento leve"
+                        ]
+                    },
+                    {
+                        day: "Sexta-feira",
+                        name: "Rodagem de Suporte",
+                        badge: "Suporte",
+                        dist: "5",
+                        pace: "5:50 - 6:00 min/km",
+                        type: "rodagem",
+                        desc: "Corrida leve visando regeneração aeróbica. Mantenha os ombros relaxados.",
+                        splits: []
+                    },
+                    {
+                        day: "Domingo",
+                        name: "Treino Longo",
+                        badge: "Longo",
+                        dist: "12",
+                        pace: "5:45 - 6:00 min/km",
+                        type: "longo",
+                        desc: "Consolidação de distância e tempo de esforço muscular contínuo. Experimente usar gel de carboidrato no km 6.",
+                        splits: []
+                    }
+                ]
+            },
+            4: {
+                volume: "36 km",
+                ratio: "38.8%",
+                desc: "O pico de volume da sua planilha. Consolidação física e mental absoluta.",
+                days: [
+                    {
+                        day: "Segunda-feira",
+                        name: "Rodagem Conforto",
+                        badge: "Conforto",
+                        dist: "7",
+                        pace: "5:50 - 6:05 min/km",
+                        type: "rodagem",
+                        desc: "Acúmulo confortável de base semanal inicial. Mantenha a respiração nasal tranquila.",
+                        splits: []
+                    },
+                    {
+                        day: "Quarta-feira",
+                        name: "Simulado de Conforto",
+                        badge: "Simulado",
+                        dist: "10",
+                        pace: "5:35 - 5:45 min/km",
+                        type: "ritmo",
+                        desc: "Treino simulado. O ritmo ideal deve flutuar próximo e ligeiramente mais forte que o de prova.",
+                        splits: [
+                            "1 km de aquecimento leve",
+                            "8 km no ritmo alvo simulado (5:35 - 5:45 min/km)",
+                            "1 km de desaquecimento leve"
+                        ]
+                    },
+                    {
+                        day: "Sexta-feira",
+                        name: "Rodagem de Suporte",
+                        badge: "Suporte",
+                        dist: "5",
+                        pace: "5:50 - 6:00 min/km",
+                        type: "rodagem",
+                        desc: "Regenerativo para soltar panturrilha e pernas, preparando a musculatura para o pico de domingo.",
+                        splits: []
+                    },
+                    {
+                        day: "Domingo",
+                        name: "Treino Longo Final (Pico)",
+                        badge: "Longo Pico",
+                        dist: "14",
+                        pace: "5:45 - 6:00 min/km",
+                        type: "longo",
+                        desc: "O maior treino em distância. Serve para consolidar a certeza física e mental de que você completa a prova com tranquilidade.",
+                        splits: []
+                    }
+                ]
+            },
+            5: {
+                volume: "Polimento / Redução",
+                ratio: "21.1 km Final",
+                desc: "Semana dedicada à supercompensação muscular. Descanso, boa alimentação e foco.",
+                days: [
+                    {
+                        day: "Segunda-feira",
+                        name: "Rodagem de Polimento",
+                        badge: "Polimento",
+                        dist: "5",
+                        pace: "6:00 min/km",
+                        type: "rodagem",
+                        desc: "Bem leve e sem pressa. Apenas para manter os muscles oxigenados e ativos.",
+                        splits: []
+                    },
+                    {
+                        day: "Quarta-feira",
+                        name: "Ativação com Ritmo",
+                        badge: "Ativação",
+                        dist: "5",
+                        pace: "5:40 min/km (Trecho)",
+                        type: "ritmo",
+                        desc: "Foco principal em acordar as pernas sem acumular fadiga residual.",
+                        splits: [
+                            "3 km leves e confortáveis",
+                            "2 km focados no ritmo exato de prova (5:40 min/km)"
+                        ]
+                    },
+                    {
+                        day: "Sexta-feira",
+                        name: "Descanso Absoluto",
+                        badge: "Descanso",
+                        dist: "0",
+                        pace: "Zero impacto",
+                        type: "rest",
+                        desc: "Foco total na hidratação preventiva e estoques de glicogênio muscular. Evite caminhadas longas.",
+                        splits: []
+                    },
+                    {
+                        day: "Domingo",
+                        name: "O Dia da Prova!",
+                        badge: "Meia Maratona",
+                        dist: "21.1",
+                        pace: "5:40 min/km recomendado",
+                        type: "race",
+                        desc: "O dia de colher os frutos da planilha. Mentalize a vitória, distribua bem o ritmo e aproveite cada quilômetro!",
+                        splits: []
+                    }
+                ]
+            }
+        };
+
+        // Date Calculations for countdown
+        const targetDate = new Date('2026-07-19T00:00:00-03:00'); // Race date
+        
+        function updateCountdown() {
+            const now = new Date();
+            const timeDiff = targetDate.getTime() - now.getTime();
+            const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            
+            const countdownEl = document.getElementById('countdown-val');
+            if (daysLeft > 0) {
+                countdownEl.innerHTML = `${daysLeft} <span class="countdown-unit">dias</span>`;
+            } else if (daysLeft === 0) {
+                countdownEl.innerHTML = `HOJE!`;
+            } else {
+                countdownEl.innerHTML = `CONCLUÍDO!`;
+            }
+        }
+        
+        updateCountdown();
+
+        // Local Storage State Management
+        function getWorkoutStateKey(week, dayIndex) {
+            return `samuel_run_w${week}_d${dayIndex}`;
+        }
+
+        function toggleWorkoutCompleted(week, dayIndex, isChecked) {
+            const key = getWorkoutStateKey(week, dayIndex);
+            if (isChecked) {
+                localStorage.setItem(key, 'true');
+            } else {
+                localStorage.removeItem(key);
+            }
+            
+            // Check if it's the race day (Week 5, Day 3 - index of Sunday)
+            if (week === 5 && dayIndex === 3 && isChecked) {
+                triggerConfettiEffect();
+            }
+            
+            updateCardCompletionState(week, dayIndex, isChecked);
+            updateOverallProgress();
+        }
+
+        function triggerConfettiEffect() {
+            const duration = 4 * 1000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 4,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#f97316', '#06b6d4', '#10b981']
+                });
+                confetti({
+                    particleCount: 4,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#f97316', '#06b6d4', '#10b981']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        function updateCardCompletionState(week, dayIndex, isCompleted) {
+            const card = document.querySelector(`.workout-card[data-week="${week}"][data-day="${dayIndex}"]`);
+            if (card) {
+                if (isCompleted) {
+                    card.classList.add('completed');
+                } else {
+                    card.classList.remove('completed');
+                }
+            }
+        }
+
+        function updateOverallProgress() {
+            let totalWorkouts = 0;
+            let completedWorkouts = 0;
+            
+            for (let w = 1; w <= 5; w++) {
+                const daysCount = workoutData[w].days.length;
+                totalWorkouts += daysCount;
+                for (let d = 0; d < daysCount; d++) {
+                    if (localStorage.getItem(getWorkoutStateKey(w, d)) === 'true') {
+                        completedWorkouts++;
+                    }
+                }
+            }
+            
+            // Update Text
+            const detailsTxt = document.getElementById('prog-details-txt');
+            detailsTxt.textContent = `Você concluiu ${completedWorkouts} de ${totalWorkouts} sessões da planilha.`;
+            
+            // Update Circle Ring
+            const pct = Math.round((completedWorkouts / totalWorkouts) * 100);
+            document.getElementById('overall-progress-pct').innerHTML = `${pct}%<span>Concluído</span>`;
+            
+            const circle = document.getElementById('overall-progress-ring');
+            const radius = circle.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (pct / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        // Render Workouts for Selected Week
+        function renderWeek(weekNum) {
+            const weekInfo = workoutData[weekNum];
+            document.getElementById('week-title').textContent = `Semana ${weekNum}: ${weekNum === 5 ? 'Polimento e Prova' : 'Acúmulo Progressivo'}`;
+            document.getElementById('week-desc').textContent = weekInfo.desc;
+            document.getElementById('week-badge-vol').textContent = `Volume: ${weekInfo.volume}`;
+            document.getElementById('week-badge-ratio').textContent = `Longo: ${weekInfo.ratio}`;
+            
+            const grid = document.getElementById('workouts-grid');
+            grid.innerHTML = '';
+            
+            weekInfo.days.forEach((day, index) => {
+                const isCompleted = localStorage.getItem(getWorkoutStateKey(weekNum, index)) === 'true';
+                
+                const card = document.createElement('div');
+                card.className = `glass-card workout-card ${day.type}-type ${isCompleted ? 'completed' : ''}`;
+                card.setAttribute('data-week', weekNum);
+                card.setAttribute('data-day', index);
+                
+                let splitsHTML = '';
+                if (day.splits && day.splits.length > 0) {
+                    splitsHTML = `<div class="splits-stepper">
+                        ${day.splits.map(s => `<div class="split-step">${s}</div>`).join('')}
+                    </div>`;
+                }
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="workout-header">
+                            <div>
+                                <h4 class="workout-day-title">${day.day}</h4>
+                                <span class="workout-date-label">${day.name}</span>
+                            </div>
+                            <span class="workout-badge">${day.badge}</span>
+                        </div>
+                        
+                        <div class="workout-metrics">
+                            <div class="metric-item">
+                                <span class="metric-value-huge">${day.dist}</span>
+                                <span class="metric-value-label">KM</span>
+                            </div>
+                            <div class="metric-divider"></div>
+                            <div class="metric-item">
+                                <span style="font-size: 15px; font-weight: 700;">${day.pace}</span>
+                                <span class="metric-value-label">Ritmo Alvo</span>
+                            </div>
+                        </div>
+                        
+                        ${splitsHTML}
+                        
+                        <p class="workout-desc">${day.desc}</p>
+                    </div>
+                    
+                    <div class="workout-footer">
+                        <label class="check-container">
+                            <input type="checkbox" class="check-input" ${isCompleted ? 'checked' : ''} onchange="toggleWorkoutCompleted(${weekNum}, ${index}, this.checked)">
+                            <span class="checkmark"></span>
+                            Treino Concluído
+                        </label>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Setup Week selector listeners
+        const tabs = document.querySelectorAll('.week-tab-btn');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                tabs.forEach(t => t.classList.remove('active'));
+                const btn = e.currentTarget;
+                btn.classList.add('active');
+                renderWeek(parseInt(btn.getAttribute('data-week')));
+            });
+        });
+
+        // Theme Toggle Functionality
+        const themeBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            if (document.body.classList.contains('light-theme')) {
+                themeIcon.className = 'ph ph-moon';
+                localStorage.setItem('samuel_run_theme', 'light');
+            } else {
+                themeIcon.className = 'ph ph-sun';
+                localStorage.setItem('samuel_run_theme', 'dark');
+            }
+        });
+
+        // Load saved theme preference
+        const savedTheme = localStorage.getItem('samuel_run_theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+            themeIcon.className = 'ph ph-moon';
+        }
+
+        // Active week auto-detection (simple helper to pick week based on date ranges leading up to 19th July)
+        function getAutoSelectedWeek() {
+            const now = new Date();
+            const raceDay = new Date('2026-07-19T00:00:00-03:00');
+            const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+            
+            const diff = raceDay.getTime() - now.getTime();
+            
+            if (diff > 4 * oneWeekMs) return 1;
+            if (diff > 3 * oneWeekMs) return 2;
+            if (diff > 2 * oneWeekMs) return 3;
+            if (diff > 1 * oneWeekMs) return 4;
+            return 5;
+        }
+
+        const initialWeek = getAutoSelectedWeek();
+        const activeTab = document.querySelector(`.week-tab-btn[data-week="${initialWeek}"]`);
+        if (activeTab) {
+            tabs.forEach(t => t.classList.remove('active'));
+            activeTab.classList.add('active');
+            renderWeek(initialWeek);
+        } else {
+            renderWeek(1);
+        }
+        
+        updateOverallProgress();
+
+        // Estimator Calculator Logic
+        const calcDist = document.getElementById('calc-dist');
+        const calcPace = document.getElementById('calc-pace');
+        const calcTimeOutput = document.getElementById('calc-time-output');
+        
+        function calculateEstimatedTime() {
+            const distance = parseFloat(calcDist.value);
+            const paceStr = calcPace.value;
+            const [minutes, seconds] = paceStr.split(':').map(Number);
+            
+            const paceInSeconds = (minutes * 60) + seconds;
+            const totalTimeInSeconds = distance * paceInSeconds;
+            
+            const hrs = Math.floor(totalTimeInSeconds / 3600);
+            const mins = Math.floor((totalTimeInSeconds % 3600) / 60);
+            const secs = Math.round(totalTimeInSeconds % 60);
+            
+            let resultText = '';
+            if (hrs > 0) {
+                resultText += `${hrs}h `;
+            }
+            resultText += `${mins}m ${secs}s`;
+            
+            calcTimeOutput.textContent = resultText;
+        }
+
+        calcDist.addEventListener('change', calculateEstimatedTime);
+        calcPace.addEventListener('change', calculateEstimatedTime);
+    </script>
+</body>
+</html>
